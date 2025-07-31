@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";  
-import {ApiError} from "../utils/apiError.js";
+import {ApiError} from "../utils/ApiError.js";
 import {User} from "../models/user.model.js"; 
-import {uploadonCloudinary} from "../utils/cloudinary.js"; // Assuming you have a cloudinary setup for file uploads
+import {uploadOnCloudinary} from "../utils/cloudinary.js"; // Assuming you have a cloudinary setup for file uploads
 import ApiResponse from "../utils/ApiResponse.js"; // Importing ApiResponse class
 
 const registerUser  = asyncHandler(async (req, res) => {
@@ -29,7 +29,7 @@ const registerUser  = asyncHandler(async (req, res) => {
       throw new ApiError("All fields are required", 400);
    }
    
-   const existedUser = User.findOne({$or: [{username}, {email}]})
+   const existedUser = await User.findOne({$or: [{username}, {email}]})
    
 
    if (existedUser) {
@@ -43,23 +43,20 @@ const registerUser  = asyncHandler(async (req, res) => {
       throw new ApiError("Avatar is required", 400);
    }
 
-   const avatar =await uploadonCloudinary(avatarLocalPath)
-   const coverImage =  await uploadonCloudinary(coverImageLocalPath) ;
+   const avatar =await uploadOnCloudinary(avatarLocalPath)
+   const coverImage =  await uploadOnCloudinary(coverImageLocalPath) ;
 
    if (!avatar) {
       throw new ApiError("Failed to upload avatar", 500);
    }
 
-   User.create({
+   const user = await User.create({
       fullname,
       avatar: avatar.url,
       coverImage: coverImage?.url || "",
       email,
       password,
       username: username.toLowerCase(),
-   // res.status(200).json({
-   //      message:"ok"
-   //   })
 })
 
    const createdUser = await User.findById(user._id).select("-password -refreshToken");

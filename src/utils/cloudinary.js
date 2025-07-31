@@ -9,7 +9,7 @@ cloudinary.config({
 });
 
 
-const uploadOnClodinary = async (localFilePath) => {
+const uploadOnCloudinary = async (localFilePath) => {
     try {
         if(!localFilePath) {
             throw new Error("Local file path is required for upload.");
@@ -19,7 +19,8 @@ const uploadOnClodinary = async (localFilePath) => {
             resource_type: "auto", // Automatically detect the resource type (image, video, etc.)
         } );
         
-        console.log("File uploaded successfully:", result.url);
+        // console.log("File uploaded successfully:", result.url);
+        fs.unlinkSync(localFilePath); // Clean up the local file after upload
         return result;
     } catch (error) {
         fs.unlinkSync(localFilePath); // Clean up the local file if upload fails
@@ -27,4 +28,4 @@ const uploadOnClodinary = async (localFilePath) => {
     }
 }
 
-export {uploadOnClodinary}
+export {uploadOnCloudinary}
